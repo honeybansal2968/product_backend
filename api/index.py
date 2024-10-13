@@ -3,7 +3,6 @@ from flask_cors import CORS
 import base64
 import io
 from dotenv import load_dotenv
-
 import numpy as np
 import sys
 import os
