@@ -5,10 +5,22 @@ import io
 from dotenv import load_dotenv
 
 import numpy as np
-import Voice_to_Text,Data_Recommendation,Gemini_API
+import sys
+import os
+
+# Get the current directory and the path to the parent directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+
+# Add the parent directory to the Python path
+sys.path.append(parent_dir)
+
+# Now you can import your modules
+import Voice_to_Text
+import Data_Recommendation
+import Gemini_API
 from PIL import Image
 app = Flask(__name__)
-import os
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 load_dotenv()
