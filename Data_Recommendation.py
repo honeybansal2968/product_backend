@@ -9,6 +9,7 @@ import os
 from pinecone import Pinecone
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 # Load a pre-trained model (e.g., Sentence-BERT)
 sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')  # A fast model for embeddings
 # Load the environment variables from the .env file
@@ -19,33 +20,10 @@ pinecone_api_key = os.getenv('PINECONE_API_KEY')
 pc = Pinecone(api_key=pinecone_api_key)
 pinecone_index = pc.Index("product-index")
 tfidf_vectorizer = TfidfVectorizer()
-data = pd.DataFrame(pd.read_csv('https://drive.google.com/uc?id=1Ep1NHgOS8030aUJGieWL4_T3Gd8MOgES'))
+data = pd.DataFrame(pd.read_csv('asos_data.csv'))
 corpus = data['keywords'].tolist()
 tfidf_vectorizer.fit(corpus)
-def get_weighted_query_embedding(query, model, tfidf_vectorizer):
-    # Tokenize the query
-    query_tokens = query.split()
-    
-    # Calculate TF-IDF scores for the query
-    query_tfidf = tfidf_vectorizer.transform([' '.join(query_tokens)]).toarray()[0]
-    
-    # Generate embeddings for each token and apply weights based on TF-IDF
-    weighted_embeddings = []
-    
-    for i, token in enumerate(query_tokens):
-        # Generate the embedding for the token
-        embedding = model.encode(token)
 
-        # Weight the embedding by the corresponding TF-IDF score
-        weight = query_tfidf[i]
-        weighted_embeddings.append(weight * np.array(embedding))
-
-    # Calculate the average of the weighted embeddings
-    if weighted_embeddings:
-        final_embedding = np.mean(weighted_embeddings, axis=0)
-        return final_embedding.tolist()
-    else:
-        return None  # Handle case with no tokens
 def getRecommendedProducts(query):
     query_vector = sentence_model.encode(query).tolist()
     result = pinecone_index.query(vector=query_vector, top_k=100)
