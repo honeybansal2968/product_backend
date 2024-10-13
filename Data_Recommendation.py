@@ -19,7 +19,7 @@ pinecone_api_key = os.getenv('PINECONE_API_KEY')
 pc = Pinecone(api_key=pinecone_api_key)
 pinecone_index = pc.Index("product-index")
 tfidf_vectorizer = TfidfVectorizer()
-data = pd.DataFrame(pd.read_csv('asos_data.csv'))
+data = pd.DataFrame(pd.read_csv('https://drive.google.com/uc?id=1Ep1NHgOS8030aUJGieWL4_T3Gd8MOgES'))
 corpus = data['keywords'].tolist()
 tfidf_vectorizer.fit(corpus)
 def get_weighted_query_embedding(query, model, tfidf_vectorizer):
