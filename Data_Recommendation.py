@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 import os
 
 from pinecone import Pinecone
-from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+from sentence_transformers import SentenceTransformer
+# print("cuda",os.environ["CUDA_VISIBLE_DEVICES"])
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 # Load a pre-trained model (e.g., Sentence-BERT)
 sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')  # A fast model for embeddings
 # Load the environment variables from the .env file
