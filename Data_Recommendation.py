@@ -1,13 +1,10 @@
 import Gemini_API
-import numpy as np
 import pandas as pd
 from  flask import jsonify
 import ast
 from dotenv import load_dotenv
 import os
-
 from pinecone import Pinecone
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sentence_transformers import SentenceTransformer
 # print("cuda",os.environ["CUDA_VISIBLE_DEVICES"])
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -16,14 +13,10 @@ sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')  # A fast model 
 # Load the environment variables from the .env file
 load_dotenv()
 pinecone_api_key = os.getenv('PINECONE_API_KEY')
-
 # Initialize Pinecone
 pc = Pinecone(api_key=pinecone_api_key)
 pinecone_index = pc.Index("product-index")
-tfidf_vectorizer = TfidfVectorizer()
-data = pd.DataFrame(pd.read_csv('asos_data.csv'))
-corpus = data['keywords'].tolist()
-tfidf_vectorizer.fit(corpus)
+data = pd.DataFrame(pd.read_csv('https://drive.google.com/uc?id=1Ep1NHgOS8030aUJGieWL4_T3Gd8MOgES'))
 
 def getRecommendedProducts(query):
     query_vector = sentence_model.encode(query).tolist()
