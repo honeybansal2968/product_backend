@@ -109,7 +109,7 @@ async def default_search():
     # Generate random default products
     default_products = np.random.randint(1, 100, 50).tolist()
     return Data_Recommendation.get_data(default_products)
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.23", port=7860)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.23", port=7860)
     
