@@ -18,8 +18,9 @@ pc = Pinecone(api_key=pinecone_api_key)
 pinecone_index = pc.Index("product-index")
 data = pd.DataFrame(pd.read_csv('https://drive.google.com/uc?id=1Ep1NHgOS8030aUJGieWL4_T3Gd8MOgES'))
 
-def getRecommendedProducts(query):
-    query_vector = sentence_model.encode(query).tolist()
+def getRecommendedProducts(query,new_question):
+    modified_query=Gemini_API.getClothPrompt(query,new_question)
+    query_vector = sentence_model.encode(modified_query).tolist()
     result = pinecone_index.query(vector=query_vector, top_k=100)
     dic={}
     scores_list= []
@@ -47,7 +48,7 @@ def getRecommendedProducts(query):
         first_10_entries = dict(product_data[:10])
     else:
         first_10_entries = dict(product_data)
-    message = getGeminiResponse(query,first_10_entries, scores_list[0])
+    message = getGeminiResponse(modified_query,first_10_entries, scores_list[0])
     return {
         "data":dic,
         "scores":scores_list,
@@ -91,9 +92,9 @@ def show_recommendation(Prompt):
     print(dic)
     return jsonify(dic)
 
-def show_image_recommendation(path):
+def show_image_recommendation(path,new_question):
     prompt=Gemini_API.images(path)
-    return getRecommendedProducts(prompt)
+    return getRecommendedProducts(prompt,new_question)
 
 def get_data(default_data):
     final_li =default_data

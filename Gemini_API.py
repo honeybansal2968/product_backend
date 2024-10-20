@@ -2,11 +2,15 @@ import google.generativeai as genai
 import PIL.Image
 
 chat = None
-
+query_chat = None
+def Start_a_ChatSecondApiChat(second_api_key):
+    genai.configure(api_key=second_api_key)
+    global  query_chat
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    query_chat = model.start_chat(history=[])
 def Start_a_Chat(api_key):
     genai.configure(api_key=api_key)
     global  chat
-    import Data_Recommendation
     model = genai.GenerativeModel('gemini-1.5-flash')
     chat = model.start_chat(history=[])
     # json_data = Data_Recommendation.data[:300].to_json(orient='records')
@@ -14,14 +18,18 @@ def Start_a_Chat(api_key):
     # initial_prompt = f"Here's some data:\n  {json_data} \n Please remember the data as u are the centeral management of entire store ."
     # chat.send_message(initial_prompt)
 
-def new_chat():
-    chat = model.start_chat(history=[])
+
 
 def images(path):
     img = PIL.Image.open(path)
     prompt2 = "Identify the clothing items in the image and provide a good user written prompt who is looking for the cloth shown in the image. Be professional as you are an expert in clothing."
     response = chat.send_message([prompt2,img])
     print("Model Response Image : "+response.text)
+    return response.text
+def getClothPrompt(prompt,new_question):
+    prompt2 = f"New question. I want to  feed this {prompt} to my encoder for vector db search merge it with any previous context and make a line that reserve the context your output must be just a sentence" if new_question==True else f"\"{prompt}\" <- This is the user's query. If you have previous context related to current query only then use it with current query, but do not include all the previous context, just use context related to current query and generate a nice user created prompt. If you do have any previous context about the given prompt, then just return a prompt as it is by checking if there's any spelling mistakes. Your output should be only the user created prompt, nothing else."
+    response = query_chat.send_message(prompt2)
+    print("prompt 2", response.text)
     return response.text
 
 def give_indices(user_prompt):

@@ -36,9 +36,11 @@ app.add_middleware(
 # Load environment variables
 load_dotenv()
 api_key = os.getenv('API_KEY')
+second_api_key = os.getenv('GEMINI_API_KEY_2')
 
 # Start chat using the Gemini API
 Gemini_API.Start_a_Chat(api_key)
+Gemini_API.Start_a_ChatSecondApiChat(second_api_key)
 
 # Define the directory to save images
 SAVE_DIR = 'saved_images'
@@ -56,9 +58,9 @@ async def voice(text: str):
     return Data_Recommendation.show_recommendation(text)
 
 @app.get("/text_input")
-async def text_search(text: str):
+async def text_search(text: str, new_question: bool = False):
     # Return recommendation based on text search
-    return Data_Recommendation.getRecommendedProducts(text)
+    return Data_Recommendation.getRecommendedProducts(text,new_question)
 
 @app.get("/transcript")
 async def transcriptAPI(Path: str):
@@ -67,7 +69,7 @@ async def transcriptAPI(Path: str):
     return {"transcript": text_data}
 
 @app.post("/image")
-async def image(request: Request):
+async def image(request: Request,new_question: bool = False):
     try:
         data = await request.json()
         base64_string = data.get('imageData')
@@ -93,7 +95,7 @@ async def image(request: Request):
         image.save(file_path, 'JPEG')
         
         # Call the recommendation function
-        response_data = Data_Recommendation.show_image_recommendation(file_path)
+        response_data = Data_Recommendation.show_image_recommendation(file_path,new_question)
 
         # Clean up: delete the saved image
         if os.path.exists(file_path):
@@ -109,7 +111,7 @@ async def default_search():
     # Generate random default products
     default_products = np.random.randint(1, 100, 50).tolist()
     return Data_Recommendation.get_data(default_products)
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="127.0.0.23", port=7860)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.23", port=7860)
     
